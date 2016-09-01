@@ -15,3 +15,7 @@ elasticsearch_group: "elasticsearch"
 ELASTICSEARCH_CLUSTER_MEMBERS: []
 ELASTICSEARCH_HEAP_SIZE: "512m"
 ELASTICSEARCH_VERSION: "0.90.13"
+
+# Defaults for the elk stack
+Deployment: "default"
+Cluster: "default"
