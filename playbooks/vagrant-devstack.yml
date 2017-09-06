@@ -39,10 +39,10 @@
     - role: ecomworker
       ECOMMERCE_WORKER_BROKER_HOST: 127.0.0.1
     - discovery
-    - role: notifier
-      NOTIFIER_DIGEST_TASK_INTERVAL: "5"
-    - browsers
-    - browsermob-proxy
+#    - role: notifier
+#      NOTIFIER_DIGEST_TASK_INTERVAL: "5"
+#    - browsers
+#    - browsermob-proxy
     - local_dev
     - demo
     - oauth_client_setup
