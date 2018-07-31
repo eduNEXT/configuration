@@ -35,3 +35,14 @@ edxapp_environment_extra:
   SELENIUM_BROWSER: 'firefox'
   SELENIUM_HOST: 'edx.devstack.firefox'
   SELENIUM_PORT: '4444'
+
+EDXAPP_REGISTRATION_EXTRA_FIELDS: 
+  city: "required" 
+  country: "required" 
+  gender: "optional" 
+  goals: "required" 
+  honor_code: "required" 
+  level_of_education: "hidden" 
+  location: "required" 
+  mailing_address: "required" 
+  year_of_birth: "optional"
