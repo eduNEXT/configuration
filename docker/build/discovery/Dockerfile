@@ -15,12 +15,16 @@ CMD ["/edx/app/supervisor/venvs/supervisor/bin/supervisord", "-n", "--configurat
 ADD . /edx/app/edx_ansible/edx_ansible
 WORKDIR /edx/app/edx_ansible/edx_ansible/docker/plays
 
+ARG DISCOVERY_VERSION=master
+ENV DISCOVERY_VERSION=${DISCOVERY_VERSION}
+
 COPY docker/build/discovery/ansible_overrides.yml /
 COPY docker/build/devstack/ansible_overrides.yml /devstack/ansible_overrides.yml
 
 RUN sudo /edx/app/edx_ansible/venvs/edx_ansible/bin/ansible-playbook discovery.yml \
     -c local -i '127.0.0.1,' \
     -t 'install,assets,devstack' \
+    --extra-vars=discovery_version=${DISCOVERY_VERSION} \
     --extra-vars="@/ansible_overrides.yml" \
     --extra-vars="@/devstack/ansible_overrides.yml"
 
