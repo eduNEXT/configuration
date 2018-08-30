@@ -84,6 +84,13 @@
     - assets
     - assets:gather
 
+- name: Debug
+  debug:
+    msg: "{{ analytics_api_home }}/venvs/{{ analytics_api_service_name }}/bin/python manage.py set_api_key {{ item.key }} {{ item.value }}"
+  with_dict: "{{ ANALYTICS_API_USERS }}"
+- pause:
+    prompt: "Pause"
+
 - name: create api users
   shell: "{{ analytics_api_home }}/venvs/{{ analytics_api_service_name }}/bin/python manage.py set_api_key {{ item.key }} {{ item.value }}"
   args:

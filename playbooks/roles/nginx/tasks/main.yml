@@ -290,6 +290,23 @@
     - install
     - install:configuration
 
+#********************
+#********************
+#- name: Debug nginx
+#  debug:
+#    msg: '{{ ssl_cert.stat.exists }}'
+#- name: Debug nginx
+#  debug:
+#    msg: '{{ NGINX_ENABLE_SSL }}'
+#- name: Debug nginx
+#  debug:
+#    msg: '{{ NGINX_SSL_CERTIFICATE }}'
+#- pause:
+#  prompt: 'pause'
+#********************
+#********************
+
+
 - name: copy ssl cert
   copy:
     src: "{{ NGINX_SSL_CERTIFICATE }}"
