@@ -1,0 +1,465 @@
+Sending build context to Docker daemon  2.813MB
+Step 1/16 : ARG IMAGE_PREFIX
+Step 2/16 : FROM edxops/${IMAGE_PREFIX}xenial-common:latest
+ ---> d3dbd95e858e
+Step 3/16 : MAINTAINER edxops
+ ---> Using cache
+ ---> b6c28ebff34c
+Step 4/16 : USER root
+ ---> Using cache
+ ---> fe2418a8ddae
+Step 5/16 : CMD ["/edx/app/supervisor/venvs/supervisor/bin/supervisord", "-n", "--configuration", "/edx/app/supervisor/supervisord.conf"]
+ ---> Using cache
+ ---> 8ad2dbfb20bc
+Step 6/16 : ADD . /edx/app/edx_ansible/edx_ansible
+ ---> 06f2f7406b8c
+Step 7/16 : WORKDIR /edx/app/edx_ansible/edx_ansible/docker/plays
+ ---> Running in f250f09332ee
+Removing intermediate container f250f09332ee
+ ---> 90c9f8732be5
+Step 8/16 : COPY docker/build/edxapp/ansible_overrides.yml /
+ ---> f55f68ffbb7e
+Step 9/16 : COPY docker/build/edxapp/devstack.yml /
+ ---> 7914c58e6ba5
+Step 10/16 : COPY docker/build/devstack/ansible_overrides.yml /devstack/ansible_overrides.yml
+ ---> c8064e778dd0
+Step 11/16 : ARG OPENEDX_RELEASE=master
+ ---> Running in fc0cf8fcef2e
+Removing intermediate container fc0cf8fcef2e
+ ---> 0adbe2173062
+Step 12/16 : ENV OPENEDX_RELEASE=${OPENEDX_RELEASE}
+ ---> Running in 9295c9a1631f
+Removing intermediate container 9295c9a1631f
+ ---> 348cc73b62b9
+Step 13/16 : ARG EDX_PLATFORM_REPO="https://github.com/proversity-org/edx-platform.git"
+ ---> Running in 84a390153d6b
+Removing intermediate container 84a390153d6b
+ ---> 4a65e3e04052
+Step 14/16 : ENV EDX_PLATFORM_REPO=${EDX_PLATFORM_REPO}
+ ---> Running in 4bc268cb8bf1
+Removing intermediate container 4bc268cb8bf1
+ ---> f5e71a886bfe
+Step 15/16 : RUN sudo /edx/app/edx_ansible/venvs/edx_ansible/bin/ansible-playbook edxapp.yml     -c local -i '127.0.0.1,'     -t 'install,assets,devstack'     --extra-vars=edx_platform_version=${OPENEDX_RELEASE}     --extra-vars=edx_platform_repo=${EDX_PLATFORM_REPO}     --extra-vars="@/ansible_overrides.yml"     --extra-vars="@/devstack.yml"     --extra-vars="@/devstack/ansible_overrides.yml"
+ ---> Running in 4c8241992578
+
+PLAY [Deploy edxapp] ***********************************************************
+
+TASK [setup] *******************************************************************
+ok: [127.0.0.1]
+
+TASK [common : Check Configuration Sources] ************************************
+
+TASK [common : Remove MOTD update checker] *************************************
+ok: [127.0.0.1]
+
+TASK [common : install logrotate configuration] ********************************
+ok: [127.0.0.1]
+
+TASK [nginx : Create Diffie-Hellman parameters to prevent weak key exchange] ***
+changed: [127.0.0.1]
+
+TASK [nginx : Restrict permissions of DH parameters file] **********************
+changed: [127.0.0.1]
+
+TASK [nginx : Create nginx app and data dirs] **********************************
+changed: [127.0.0.1] => (item={u'owner': u'root', u'path': u'/edx/app/nginx', u'group': u'www-data'})
+changed: [127.0.0.1] => (item={u'owner': u'root', u'path': u'/edx/app/nginx/sites-available', u'group': u'www-data'})
+changed: [127.0.0.1] => (item={u'owner': u'root', u'path': u'/etc/nginx/sites-enabled', u'group': u'www-data'})
+changed: [127.0.0.1] => (item={u'owner': u'root', u'path': u'/edx/app/nginx/conf.d', u'group': u'www-data'})
+changed: [127.0.0.1] => (item={u'owner': u'www-data', u'path': u'/edx/var/nginx', u'group': u'root'})
+changed: [127.0.0.1] => (item={u'owner': u'www-data', u'path': u'/edx/var/log/nginx', u'group': u'root'})
+changed: [127.0.0.1] => (item={u'owner': u'www-data', u'path': u'/edx/var/nginx/server-static', u'group': u'root'})
+
+TASK [nginx : Install needed packages] *****************************************
+changed: [127.0.0.1] => (item=[u'python-passlib'])
+
+TASK [nginx : Add apt key] *****************************************************
+changed: [127.0.0.1]
+
+TASK [nginx : Add nginx repository] ********************************************
+changed: [127.0.0.1]
+
+TASK [nginx : Remove old nginx packages] ***************************************
+ok: [127.0.0.1]
+
+TASK [nginx : Install the nginx package] ***************************************
+changed: [127.0.0.1]
+
+TASK [nginx : Remove the default site] *****************************************
+ok: [127.0.0.1]
+
+TASK [nginx : Define server configuration file and common nginx configuration] *
+changed: [127.0.0.1] => (item={u'dest': u'/etc/nginx/nginx.conf', u'src': u'etc/nginx/nginx.conf.j2', u'group': u'www-data', u'mode': u'0644'})
+changed: [127.0.0.1] => (item={u'dest': u'/edx/app/nginx/sites-available/edx-release', u'src': u'edx/app/nginx/sites-available/edx-release.j2', u'group': u'root', u'mode': u'0600'})
+
+TASK [nginx : Create robot rules] **********************************************
+skipping: [127.0.0.1]
+
+TASK [nginx : Creating link for common nginx configuration] ********************
+changed: [127.0.0.1]
+
+TASK [nginx : Copying nginx configs for [u'lms', u'cms']] **********************
+changed: [127.0.0.1] => (item=lms)
+changed: [127.0.0.1] => (item=cms)
+
+TASK [nginx : Creating nginx config links for [u'lms', u'cms']] ****************
+changed: [127.0.0.1] => (item=lms)
+changed: [127.0.0.1] => (item=cms)
+
+TASK [nginx : Copying nginx extra configs] *************************************
+
+TASK [nginx : Creating links for nginx extra configs] **************************
+
+TASK [nginx : Copying custom nginx config] *************************************
+
+TASK [nginx : Copying nginx redirect configs for {}] ***************************
+
+TASK [nginx : Creating nginx redirect links for {}] ****************************
+
+TASK [nginx : Create NGINX server templates] ***********************************
+changed: [127.0.0.1] => (item={u'msg': u'If think you have encountered this message in error please let us know at <a href="mailto:technical@example.com">technical@example.com</a>', u'file': u'rate-limit.html', u'heading': u'Uh oh, we are having some server issues..', u'img': u'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Pendleton_Sinking_Ship.jpg/640px-Pendleton_Sinking_Ship.jpg', u'title': u'Rate limit exceeded'})
+changed: [127.0.0.1] => (item={u'msg': u'We have been notified of the error, if it persists please let us know at <a href="mailto:technical@example.com">technical@example.com</a>', u'file': u'server-error.html', u'heading': u'Uh oh, we are having some server issues..', u'img': u'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Pendleton_Sinking_Ship.jpg/640px-Pendleton_Sinking_Ship.jpg', u'title': u'Server error'})
+
+TASK [nginx : Write out htpasswd file] *****************************************
+skipping: [127.0.0.1] => (item={u'state': u'present', u'password': u'edx', u'name': u'edx'}) 
+
+TASK [nginx : Create nginx log file location (just in case)] *******************
+changed: [127.0.0.1]
+
+TASK [nginx : stat] ************************************************************
+ok: [127.0.0.1 -> localhost]
+
+TASK [nginx : stat] ************************************************************
+ok: [127.0.0.1 -> localhost]
+
+TASK [nginx : copy ssl cert] ***************************************************
+skipping: [127.0.0.1]
+
+TASK [nginx : copy ssl key] ****************************************************
+skipping: [127.0.0.1]
+
+TASK [nginx : Removing default nginx config and restart (enabled)] *************
+ok: [127.0.0.1]
+
+TASK [nginx : Set up nginx access log rotation] ********************************
+changed: [127.0.0.1]
+
+TASK [nginx : Set up nginx access log rotation] ********************************
+changed: [127.0.0.1]
+
+RUNNING HANDLER [nginx : restart nginx] ****************************************
+changed: [127.0.0.1]
+
+RUNNING HANDLER [nginx : reload nginx] *****************************************
+changed: [127.0.0.1]
+
+TASK [supervisor : Create application and supervisor service user] *************
+changed: [127.0.0.1] => (item=supervisor)
+ok: [127.0.0.1] => (item=www-data)
+
+TASK [supervisor : Create supervisor and service user accessible directories] **
+changed: [127.0.0.1] => (item=/edx/app/supervisor)
+changed: [127.0.0.1] => (item=/edx/app/supervisor/venvs/supervisor)
+changed: [127.0.0.1] => (item=/edx/app/supervisor/conf.d)
+changed: [127.0.0.1] => (item=/edx/app/supervisor/conf.available.d)
+
+TASK [supervisor : Create supervisor directories] ******************************
+changed: [127.0.0.1] => (item=/edx/var/supervisor)
+changed: [127.0.0.1] => (item=/edx/var/log/supervisor)
+
+TASK [supervisor : Install supervisor in its venv] *****************************
+changed: [127.0.0.1]
+
+TASK [supervisor : Install supervisor in its venv] *****************************
+changed: [127.0.0.1] => (item=boto=="2.34.0")
+changed: [127.0.0.1] => (item=python-simple-hipchat)
+
+TASK [supervisor : Create supervisor upstart job] ******************************
+skipping: [127.0.0.1]
+
+TASK [supervisor : Create supervisor systemd job] ******************************
+changed: [127.0.0.1]
+
+TASK [supervisor : Create supervisor master config] ****************************
+changed: [127.0.0.1]
+
+TASK [supervisor : Remove a symlink for supervisortctl] ************************
+ok: [127.0.0.1]
+
+TASK [supervisor : Remove symlink for supervisor cfg] **************************
+ok: [127.0.0.1] => (item=/edx/app/supervisor/supervisord.conf)
+ok: [127.0.0.1] => (item=/edx/app/supervisor/conf.d)
+
+TASK [supervisor : Create helper script for running supervisor] ****************
+changed: [127.0.0.1]
+
+TASK [supervisor : Are we in a Docker container] *******************************
+changed: [127.0.0.1]
+
+TASK [supervisor : Enable supervisor to start on boot] *************************
+skipping: [127.0.0.1]
+
+TASK [edxapp_common : Install system packages] *********************************
+changed: [127.0.0.1] => (item=[u'build-essential', u'gfortran', u'graphviz', u'graphviz-dev', u'liblapack-dev', u'libmysqlclient-dev', u'libxml2-dev', u'libgeos-dev', u'libxslt1-dev', u'gettext', u'libjpeg8-dev', u'libpng12-dev', u'libxmlsec1-dev', u'swig'])
+
+TASK [add_user : create user groups] *******************************************
+skipping: [127.0.0.1] => (item=edx-themes) 
+
+TASK [add_user : create application user] **************************************
+skipping: [127.0.0.1]
+
+TASK [add_user : ensure correct ownership of home directory] *******************
+skipping: [127.0.0.1]
+
+TASK [add_user : create dirs for the user] *************************************
+
+TASK [git_clone : Set git fetch.prune to ignore deleted remote refs] ***********
+skipping: [127.0.0.1]
+
+TASK [git_clone : Validate git protocol] ***************************************
+skipping: [127.0.0.1] => (item=(censored due to no_log)) 
+
+TASK [git_clone : Install read-only ssh key] ***********************************
+skipping: [127.0.0.1] => (item=(censored due to no_log)) 
+
+TASK [git_clone : Checkout code over ssh] **************************************
+skipping: [127.0.0.1] => (item=(censored due to no_log)) 
+
+TASK [git_clone : Checkout code over https] ************************************
+skipping: [127.0.0.1] => (item=(censored due to no_log)) 
+
+TASK [git_clone : Remove read-only ssh key] ************************************
+skipping: [127.0.0.1] => (item=(censored due to no_log)) 
+
+TASK [edx_themes : ensure edx-theme's group has read/write access to themes directory] ***
+skipping: [127.0.0.1]
+
+TASK [edxapp : create application user] ****************************************
+changed: [127.0.0.1]
+
+TASK [edxapp : create edxapp user dirs] ****************************************
+changed: [127.0.0.1] => (item={u'path': u'/edx/app/edxapp'})
+changed: [127.0.0.1] => (item={u'path': u'/edx/app/edxapp/.ssh'})
+changed: [127.0.0.1] => (item={u'path': u'/edx/app/edxapp/venvs'})
+changed: [127.0.0.1] => (item={u'path': u'/edx/var/edxapp/themes'})
+changed: [127.0.0.1] => (item={u'path': u'/edx/var/edxapp/staticfiles'})
+changed: [127.0.0.1] => (item={u'path': u'/edx/var/edxapp/course_static'})
+changed: [127.0.0.1] => (item={u'path': u'/edx/var/edxapp/data'})
+changed: [127.0.0.1] => (item={u'path': u'/edx/var/edxapp', u'mode': u'0775'})
+changed: [127.0.0.1] => (item={u'path': u'/edx/var/edxapp/course_repos', u'mode': u'0775'})
+
+TASK [edxapp : write devstack script] ******************************************
+changed: [127.0.0.1]
+
+TASK [edxapp : make the course data dir] ***************************************
+changed: [127.0.0.1]
+
+TASK [edxapp : create edxapp log dir] ******************************************
+changed: [127.0.0.1]
+
+TASK [edxapp : Ensure the tracking folder exists] ******************************
+changed: [127.0.0.1]
+
+TASK [edxapp : Ensure the tracking.log file exists] ****************************
+changed: [127.0.0.1]
+
+TASK [edxapp : create web-writable edxapp data dirs] ***************************
+changed: [127.0.0.1] => (item=/edx/var/edxapp/data)
+changed: [127.0.0.1] => (item=/edx/var/edxapp/uploads)
+changed: [127.0.0.1] => (item=/edx/var/edxapp/media)
+
+TASK [edxapp : install system packages on which LMS and CMS rely] **************
+changed: [127.0.0.1] => (item=[u's3cmd', u'pkg-config', u'g++', u'apparmor-utils', u'curl', u'ipython', u'nodejs', u'ntp', u'libfreetype6-dev', u'libffi-dev', u'python-dev', u'libsqlite3-dev', u'mongodb-clients', u'mysql-client'])
+
+TASK [edxapp : set up edxapp .npmrc] *******************************************
+changed: [127.0.0.1]
+
+TASK [edxapp : create log directories for service variants] ********************
+changed: [127.0.0.1] => (item=lms)
+changed: [127.0.0.1] => (item=cms)
+
+TASK [edxapp : create edxapp configuration dir] ********************************
+changed: [127.0.0.1]
+
+TASK [edxapp : copy the template to the desired location] **********************
+changed: [127.0.0.1] => (item={u'dest': u'/edx/app/edxapp/edxapp_env', u'src': u'edxapp_env.j2', u'group': u'www-data', u'mode': u'0644', u'owner': u'edxapp'})
+changed: [127.0.0.1] => (item={u'dest': u'/edx/app/edxapp/newrelic.ini', u'src': u'newrelic.ini.j2', u'group': u'www-data', u'mode': u'0644', u'owner': u'edxapp'})
+changed: [127.0.0.1] => (item={u'dest': u'/tmp/edxapp_git_ssh.sh', u'src': u'git_ssh.sh.j2', u'group': u'edxapp', u'mode': u'0750', u'owner': u'edxapp'})
+
+TASK [edxapp : install read-only ssh key] **************************************
+skipping: [127.0.0.1]
+
+TASK [edxapp : set git fetch.prune to ignore deleted remote refs] **************
+changed: [127.0.0.1]
+
+TASK [edxapp : checkout edx-platform repo into /edx/app/edxapp/edx-platform] ***
+changed: [127.0.0.1]
+
+TASK [edxapp : git clean after checking out edx-platform] **********************
+changed: [127.0.0.1]
+
+TASK [edxapp : checkout Stanford-style theme] **********************************
+skipping: [127.0.0.1]
+
+TASK [edxapp : Stat each requirements file with Github URLs to ensure it exists] ***
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/pre.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/github.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/custom.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/base.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/post.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/paver.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/edx-private.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx-sandbox/post.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx-sandbox/local.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx-sandbox/base.txt)
+
+TASK [edxapp : Updating requirement files for git mirror] **********************
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.232063, u'inode': 36446864, u'isgid': False, u'size': 414, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/pre.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'604689195c1c3890f68cc4f2d74e23cb', u'isdir': False, u'ctime': 1537210249.232063, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'eff25dc9c0eb04f8468d69132526dc25907d2b54', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/pre.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/pre.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.2280629, u'inode': 36446859, u'isgid': False, u'size': 6972, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/github.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'786f9a9a61b608aef00d3ae8eefab5a0', u'isdir': False, u'ctime': 1537210249.2280629, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'4f80bcbaf7dbd7c2082f1a8e7192706a40661c0a', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/github.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/github.txt', u'get_md5': True}}})
+skipping: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'exists': False}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/custom.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/custom.txt', u'get_md5': True}}}) 
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.2280629, u'inode': 36446853, u'isgid': False, u'size': 4771, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/base.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'c176eb5a8730006af22f670a9e93fbdf', u'isdir': False, u'ctime': 1537210249.2280629, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'13e91338e54dd2896891939f579f7b8343df9206', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/base.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/base.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.232063, u'inode': 36446863, u'isgid': False, u'size': 501, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/post.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'3b2733180a4423b69d5d458f82533d06', u'isdir': False, u'ctime': 1537210249.232063, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'13f3a5838f1e7f587649a5974ca1d871b8ae4b7f', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/post.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/post.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.232063, u'inode': 36446862, u'isgid': False, u'size': 96, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/paver.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'97e7f273665809333f6d804663085365', u'isdir': False, u'ctime': 1537210249.232063, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'cc2d1d13e32a22ae217595babb0ef4c1e4fda7ec', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/paver.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/paver.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.2280629, u'inode': 36446858, u'isgid': False, u'size': 2090, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/edx-private.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'e7a70b1dd0f0e3e926538d3f731bff21', u'isdir': False, u'ctime': 1537210249.2280629, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'0da72fda31f5f4138cacb9fd3fe8aefea932b240', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/edx-private.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/edx-private.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.2280629, u'inode': 36446851, u'isgid': False, u'size': 357, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx-sandbox/post.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'64b8a64809a4e25de3974f37f4d90090', u'isdir': False, u'ctime': 1537210249.2280629, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'ed60f89b1322f5cee91877d5b090e221419be568', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx-sandbox/post.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx-sandbox/post.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.2280629, u'inode': 36446850, u'isgid': False, u'size': 489, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx-sandbox/local.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'1e4e2d649e19c43700ae5617d5793850', u'isdir': False, u'ctime': 1537210249.2280629, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'dacaa78b5dbab6f4581b986e6d435e6c6200831a', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx-sandbox/local.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx-sandbox/local.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.2280629, u'inode': 36446849, u'isgid': False, u'size': 492, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx-sandbox/base.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'386e9aed4cc578358e2ac850ae5ace49', u'isdir': False, u'ctime': 1537210249.2280629, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'97f4d46cfd19e54fda84f0d3cdf6fc799167b687', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx-sandbox/base.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx-sandbox/base.txt', u'get_md5': True}}})
+
+TASK [edxapp : Create the virtualenv to install the Python requirements] *******
+changed: [127.0.0.1]
+
+TASK [edxapp : Stat each Python requirements file to ensure it exists] *********
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/pre.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/github.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/custom.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/local.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/base.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/post.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/paver.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/development.txt)
+ok: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/testing.txt)
+
+TASK [edxapp : install python requirements] ************************************
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210252.020132, u'inode': 36446902, u'isgid': False, u'size': 414, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/pre.txt', u'xusr': False, u'atime': 1537210252.020132, u'md5': u'604689195c1c3890f68cc4f2d74e23cb', u'isdir': False, u'ctime': 1537210252.0281322, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'eff25dc9c0eb04f8468d69132526dc25907d2b54', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/pre.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/pre.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210252.1961365, u'inode': 36446864, u'isgid': False, u'size': 6972, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/github.txt', u'xusr': False, u'atime': 1537210252.1961365, u'md5': u'786f9a9a61b608aef00d3ae8eefab5a0', u'isdir': False, u'ctime': 1537210252.1961365, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'4f80bcbaf7dbd7c2082f1a8e7192706a40661c0a', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/github.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/github.txt', u'get_md5': True}}})
+skipping: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'exists': False}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/custom.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/custom.txt', u'get_md5': True}}}) 
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.2280629, u'inode': 36446860, u'isgid': False, u'size': 308, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/local.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'49992f42d7d12edb909e994ddf6cad84', u'isdir': False, u'ctime': 1537210249.2280629, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'02bb3feb152f4a130117dbc38b85ea7fb0763992', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/local.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/local.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210252.380141, u'inode': 36446859, u'isgid': False, u'size': 4771, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/base.txt', u'xusr': False, u'atime': 1537210252.380141, u'md5': u'c176eb5a8730006af22f670a9e93fbdf', u'isdir': False, u'ctime': 1537210252.380141, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'13e91338e54dd2896891939f579f7b8343df9206', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/base.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/base.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210252.540145, u'inode': 36446853, u'isgid': False, u'size': 501, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/post.txt', u'xusr': False, u'atime': 1537210252.540145, u'md5': u'3b2733180a4423b69d5d458f82533d06', u'isdir': False, u'ctime': 1537210252.540145, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'13f3a5838f1e7f587649a5974ca1d871b8ae4b7f', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/post.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/post.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210252.7001488, u'inode': 36446863, u'isgid': False, u'size': 96, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/paver.txt', u'xusr': False, u'atime': 1537210252.7001488, u'md5': u'97e7f273665809333f6d804663085365', u'isdir': False, u'ctime': 1537210252.7001488, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'cc2d1d13e32a22ae217595babb0ef4c1e4fda7ec', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/paver.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/paver.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.2280629, u'inode': 36446856, u'isgid': False, u'size': 499, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/development.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'8c9fde47efff7bc5c395b8aa38ef11f5', u'isdir': False, u'ctime': 1537210249.2280629, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'a4ff945cf488d478d37693ddd82ac846a77ad53e', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/development.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/development.txt', u'get_md5': True}}})
+changed: [127.0.0.1] => (item={'_ansible_parsed': True, u'stat': {u'uid': 1003, u'exists': True, u'woth': False, u'mtime': 1537210249.232063, u'inode': 36446865, u'isgid': False, u'size': 724, u'executable': False, u'roth': True, u'isuid': False, u'readable': True, u'isreg': True, u'pw_name': u'edxapp', u'gid': 1004, u'ischr': False, u'wusr': True, u'writeable': True, u'xoth': False, u'islnk': False, u'nlink': 1, u'issock': False, u'rgrp': True, u'gr_name': u'edxapp', u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/testing.txt', u'xusr': False, u'atime': 1537210250.7281, u'md5': u'416aebae9f5c7b3be210151fa7549d10', u'isdir': False, u'ctime': 1537210249.232063, u'isblk': False, u'xgrp': False, u'dev': 2049, u'wgrp': False, u'isfifo': False, u'mode': u'0644', u'checksum': u'3b28fdb3954d7f83b4b334994f690a851dafdb06', u'rusr': True}, '_ansible_item_result': True, '_ansible_no_log': False, u'changed': False, 'item': u'/edx/app/edxapp/edx-platform/requirements/edx/testing.txt', 'invocation': {'module_name': u'stat', u'module_args': {u'checksum_algorithm': u'sha1', u'mime': False, u'get_checksum': True, u'follow': False, u'path': u'/edx/app/edxapp/edx-platform/requirements/edx/testing.txt', u'get_md5': True}}})
+
+TASK [edxapp : install python private requirements] ****************************
+changed: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx/edx-private.txt)
+
+TASK [edxapp : install python extra requirements] ******************************
+
+TASK [edxapp : install CAS attribute module] ***********************************
+skipping: [127.0.0.1]
+
+TASK [edxapp : install sandbox requirements into regular venv] *****************
+changed: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx-sandbox/base.txt)
+changed: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx-sandbox/local.txt)
+changed: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx-sandbox/post.txt)
+
+TASK [edxapp : create nodeenv] *************************************************
+changed: [127.0.0.1]
+
+TASK [edxapp : Set the npm registry] *******************************************
+ok: [127.0.0.1]
+
+TASK [edxapp : Set the npm registry permissions] *******************************
+changed: [127.0.0.1]
+
+TASK [edxapp : code sandbox | put sandbox apparmor profile in complain mode] ***
+skipping: [127.0.0.1]
+
+TASK [edxapp : code sandbox | Install base sandbox requirements and create sandbox virtualenv] ***
+skipping: [127.0.0.1]
+
+TASK [edxapp : code sandbox | Install sandbox requirements into sandbox venv] **
+skipping: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx-sandbox/local.txt) 
+skipping: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/requirements/edx-sandbox/post.txt) 
+
+TASK [edxapp : code sandbox | put code sandbox into aa-enforce or aa-complain mode, depending on EDXAPP_SANDBOX_ENFORCE] ***
+skipping: [127.0.0.1]
+
+TASK [edxapp : compiling all py files in the edx-platform repo] ****************
+changed: [127.0.0.1]
+
+TASK [edxapp : give other read permissions to the virtualenv] ******************
+ok: [127.0.0.1]
+
+TASK [edxapp : create application and auth config] *****************************
+changed: [127.0.0.1] => (item=[u'lms', u'env'])
+changed: [127.0.0.1] => (item=[u'lms', u'auth'])
+changed: [127.0.0.1] => (item=[u'cms', u'env'])
+changed: [127.0.0.1] => (item=[u'cms', u'auth'])
+
+TASK [edxapp : create auth and application yaml config] ************************
+changed: [127.0.0.1] => (item=[u'lms', u'env'])
+changed: [127.0.0.1] => (item=[u'lms', u'auth'])
+changed: [127.0.0.1] => (item=[u'cms', u'env'])
+changed: [127.0.0.1] => (item=[u'cms', u'auth'])
+
+TASK [edxapp : writing {{ item }} supervisor script] ***************************
+changed: [127.0.0.1] => (item=lms)
+changed: [127.0.0.1] => (item=cms)
+
+TASK [edxapp : writing edxapp and celery supervisor scripts] *******************
+changed: [127.0.0.1] => (item=edxapp.conf)
+changed: [127.0.0.1] => (item=workers.conf)
+
+TASK [edxapp : add gunicorn configuration files] *******************************
+changed: [127.0.0.1] => (item=lms)
+changed: [127.0.0.1] => (item=cms)
+
+TASK [edxapp : enable {{ item }} supervisor script] ****************************
+changed: [127.0.0.1] => (item=lms)
+changed: [127.0.0.1] => (item=cms)
+
+TASK [edxapp : enable edxapp supervisor script] ********************************
+changed: [127.0.0.1]
+
+TASK [edxapp : enable celery worker supervisor script] *************************
+skipping: [127.0.0.1]
+
+TASK [edxapp : create helper scripts for managing edxapp] **********************
+changed: [127.0.0.1] => (item=[u'edxapp-migrate', u'lms'])
+changed: [127.0.0.1] => (item=[u'edxapp-migrate', u'cms'])
+changed: [127.0.0.1] => (item=[u'edxapp-runserver', u'lms'])
+changed: [127.0.0.1] => (item=[u'edxapp-runserver', u'cms'])
+changed: [127.0.0.1] => (item=[u'edxapp-update-assets', u'lms'])
+changed: [127.0.0.1] => (item=[u'edxapp-update-assets', u'cms'])
+changed: [127.0.0.1] => (item=[u'edxapp-shell', u'lms'])
+changed: [127.0.0.1] => (item=[u'edxapp-shell', u'cms'])
+
+TASK [edxapp : Remove and recreate the staticfiles directory so nothing stale can exist] ***
+skipping: [127.0.0.1] => (item=absent) 
+skipping: [127.0.0.1] => (item=directory) 
+
+TASK [edxapp : gather {{ item }} static assets with paver] *********************
+skipping: [127.0.0.1] => (item=lms) 
+skipping: [127.0.0.1] => (item=cms) 
+
+TASK [edxapp : create symlinks from the venv bin dir and repo dir] *************
+changed: [127.0.0.1] => (item=/edx/app/edxapp/venvs/edxapp/bin/python)
+changed: [127.0.0.1] => (item=/edx/app/edxapp/venvs/edxapp/bin/pip)
+changed: [127.0.0.1] => (item=/edx/app/edxapp/venvs/edxapp/bin/django-admin.py)
+changed: [127.0.0.1] => (item=/edx/app/edxapp/edx-platform/manage.py)
+
+TASK [edxapp : remove read-only ssh key] ***************************************
+skipping: [127.0.0.1]
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=74   changed=60   unreachable=0    failed=0   
+
+Removing intermediate container 4c8241992578
+ ---> 4fa8623ab693
+Step 16/16 : EXPOSE 18000 18010
+ ---> Running in f86d7c6e05e9
+Removing intermediate container f86d7c6e05e9
+ ---> 61c196f6ac1c
+Successfully built 61c196f6ac1c
+Successfully tagged ednxops/edxapp:prov.development
