@@ -5,8 +5,9 @@ upstream {{ edx_notes_api_service_name }}_app_server {
 }
 
 server {
-  listen {{ edx_notes_api_nginx_port }} default_server;
+  listen {{ edx_notes_api_nginx_port }} {% if edx_notes_api_default_server %}default_server{% endif %};
 
+  server_name {{ EDX_NOTES_API_HOSTNAME }};
   {% if NGINX_ENABLE_SSL %}
 
   listen {{ edx_notes_api_ssl_nginx_port }} ssl;

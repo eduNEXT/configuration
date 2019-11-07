@@ -109,6 +109,8 @@ edx_notes_api_venv_dir:  "{{ edx_notes_api_home }}/venvs/{{ edx_notes_api_servic
 
 edx_notes_api_gunicorn_host: "127.0.0.1"
 edx_notes_api_gunicorn_port: 8120
+edx_notes_api_default_server: false
+EDX_NOTES_API_HOSTNAME: "notes.*"
 edx_notes_api_gunicorn_timeout: 300
 edx_notes_api_wsgi: notesserver.wsgi:application
 edx_notes_api_nginx_port: 18120
