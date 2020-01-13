@@ -51,3 +51,6 @@ urllib3==1.22             # via requests
 wsgiref==0.1.2
 # lock to this version to avoid https://github.com/ansible/ansible/issues/20492
 docker-compose==1.9.0
+
+#Defined to fix the issue on python 2.7
+setuptools==39.0.1
