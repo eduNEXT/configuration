@@ -49,3 +49,6 @@ simplejson==3.16.0        # via datadog
 six==1.11.0               # via bcrypt, cryptography, pathlib2, pynacl, python-dateutil
 urllib3==1.22             # via requests
 wsgiref==0.1.2
+
+#Defined to fix the issue on python 2.7
+setuptools==39.0.1
