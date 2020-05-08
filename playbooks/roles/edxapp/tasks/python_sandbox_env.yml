@@ -53,7 +53,7 @@
 
 - name: code sandbox | write out apparmor code sandbox config
   template:
-    src: code.sandbox.j2
+    src: "{{ edxapp_sandbox_apparmor_config_template }}"
     dest: /etc/apparmor.d/code.sandbox
     mode: 0644
     owner: root
