@@ -224,6 +224,10 @@
   mysql_user:
     user: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.username }}"
     password: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.password }}"
+    host: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.host }}"
+    login_user: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.username }}"
+    login_password: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.password }}"
+    login_host: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.host }}"
     priv: 'acceptance%.*:ALL'
     append_privs: yes
   tags:
