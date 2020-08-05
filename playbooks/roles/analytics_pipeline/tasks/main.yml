@@ -220,19 +220,6 @@
     - install
     - install:configuration
 
-- name: Grant access to table storing test data in output database
-  mysql_user:
-    user: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.username }}"
-    password: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.password }}"
-    host: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.host }}"
-    login_password: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.password }}"
-    login_host: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE.host }}"
-    priv: 'acceptance%.*:ALL'
-    append_privs: yes
-  tags:
-    - install
-    - install:configuration
-
 - name: Test if Hive metadata store schema exists
   shell: ". {{ HADOOP_COMMON_CONF_DIR }}/hadoop-env.sh && {{ HIVE_HOME }}/bin/hive | tr '\n' ' '"
   become_user: "{{ hadoop_common_user }}"
