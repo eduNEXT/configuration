@@ -249,8 +249,8 @@
 - name: Allow users to ssh
   lineinfile:
     dest: /etc/ssh/sshd_config
-    regexp: "#users_allowed_to_ssh {{ vars['user_info'] }}"
-    line: "AllowUsers {{ (( user_info | map(attribute='name') | list ) + [ ansible_ssh_user ]) | join(' ') }} #users_allowed_to_ssh {{ vars['user_info'] }}"
+    regexp: "#users_allowed_to_ssh"
+    line: "AllowUsers {{ (( user_info | map(attribute='name') | list ) + [ ansible_ssh_user ]) | join(' ') }} #users_allowed_to_ssh"
   when: user_info|length > 0
   register: users_ssh_access
 
