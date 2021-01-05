@@ -218,3 +218,5 @@ NGINX_TRUSTED_IP_CIDRS: "0.0.0.0/0"
 
 # Custom setting added by Edunext to make submissions size configurable
 NGINX_EDXAPP_LMS_MAX_BODY_SIZE: "20M"
+
+EDXAPP_SET_PROXY_BUFFER_SIZE: False
