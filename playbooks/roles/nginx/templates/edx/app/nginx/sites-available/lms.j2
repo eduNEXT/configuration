@@ -114,7 +114,7 @@ error_page {{ k }} {{ v }};
   # Some Master's courses require submissions up to 20MB in size.
   # CMS requires larger value for course assets, values provided
   # via hiera.
-  client_max_body_size 20M;
+  client_max_body_size 100M;
 
   rewrite ^(.*)/favicon.ico$ {{ NGINX_EDXAPP_FAVICON_PATH }} last;
 
