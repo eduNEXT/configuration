@@ -25,9 +25,7 @@
         # Prevent the browser from doing MIME-type sniffing
         add_header X-Content-Type-Options nosniff;
 
-{% if EDXAPP_CORS_ORIGIN_WHITELIST|length > 0 %}
-        add_header Access-Control-Allow-Origin $cors_origin;
-{% endif %}
+        add_header Access-Control-Allow-Origin *;
         try_files /staticfiles/$collected /course_static/$collected =404;
     }
 
