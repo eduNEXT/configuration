@@ -95,17 +95,17 @@ HDFS_SITE_DEFAULT_CONFIG:
 # http://docs.aws.amazon.com/ElasticMapReduce/latest/DeveloperGuide/TaskConfiguration_H2.html
 #
 mapred_site_config:
-  mapreduce.map.memory_mb: 768
-  mapreduce.map.java.opts: '-Xmx768M'
-  mapreduce.reduce.memory.mb: 1024
-  mapreduce.reduce.java.opts: '-Xmx1024M'
+  mapreduce.map.memory_mb: 5120
+  mapreduce.map.java.opts: '-Xmx5120M'
+  mapreduce.reduce.memory.mb: 5120
+  mapreduce.reduce.java.opts: '-Xmx5120M'
 
-# yarn_site_config:
-#   yarn.app.mapreduce.am.resource.mb: 1024
-#   yarn.scheduler.minimum-allocation-mb: 32
-#   yarn.scheduler.maximum-allocation-mb: 2048
-#   yarn.nodemanager.resource.memory-mb: 2048
-#   yarn.nodemanager.vmem-pmem-ratio: 2.1
+yarn_site_config:
+  yarn.app.mapreduce.am.resource.mb: 1024
+  yarn.scheduler.minimum-allocation-mb: 32
+  yarn.scheduler.maximum-allocation-mb: 2048
+  yarn.nodemanager.resource.memory-mb: 2048
+  yarn.nodemanager.vmem-pmem-ratio: 2.1
 
 #
 # Variables override the stock configuration for entry into
@@ -117,7 +117,7 @@ mapred_site_config:
 #     yarn-site.xml
 #
 #mapred_site_config: {}
-yarn_site_config: {}
+#yarn_site_config: {}
 HADOOP_CORE_SITE_EXTRA_CONFIG: {}
 HDFS_SITE_EXTRA_CONFIG: {}
 
