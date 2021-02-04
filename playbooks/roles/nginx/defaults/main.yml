@@ -215,3 +215,6 @@ NGINX_ADMIN_ACCESS_CIDRS: []
 
 # Set trusted network subnets or IP addresses to send correct replacement addresses
 NGINX_TRUSTED_IP_CIDRS: "0.0.0.0/0"
+
+# Custom setting added by Edunext to make submissions size configurable
+NGINX_EDXAPP_LMS_MAX_BODY_SIZE: "20M"
