@@ -221,7 +221,7 @@
     - install:configuration
 
 - name: Test if Hive metadata store schema exists
-  shell: ". {{ HADOOP_COMMON_CONF_DIR }}/hadoop-env.sh && {{ HIVE_HOME }}/bin/hive | tr '\n' ' '"
+  shell: ". {{ HADOOP_COMMON_CONF_DIR }}/hadoop-env.sh && {{ HIVE_HOME }}/bin/hive -dbType mysql -info | tr '\n' ' '"
   become_user: "{{ hadoop_common_user }}"
   register: hive_metastore_info
   tags:
