@@ -21,14 +21,9 @@
 #
 #
 
-- name: Check for expired edx key
-  command: "apt-key list | grep {{ SERVER_UTILS_EDX_PPA_KEY_ID }}"
-  register: ppa_key_status
+- name: Remove old edx ppa and key
+  shell: "sudo apt-key del {{ SERVER_UTILS_EDX_PPA_KEY_ID }} && sudo rm -rf /etc/apt/sources.list.d/ppa_edx_org.list"
   when: ansible_distribution in common_debian_variants
-
-- name: remove expired edx key
-  command: "sudo apt-key adv --keyserver {{ SERVER_UTILS_EDX_PPA_KEY_SERVER }} --recv-keys {{ SERVER_UTILS_EDX_PPA_KEY_ID }}"
-  when: ansible_distribution in common_debian_variants and 'expired' in ppa_key_status.stdout
 
 - name: Install ubuntu system packages
   apt:
