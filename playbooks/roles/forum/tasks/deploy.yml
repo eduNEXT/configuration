@@ -90,6 +90,7 @@
     chdir: "{{ forum_code_dir }}"
   become_user: "{{ forum_user }}"
   environment: "{{ forum_base_env }}"
+  ignore_errors: true
 
   # call supervisorctl update. this reloads
   # the supervisorctl config and restarts
