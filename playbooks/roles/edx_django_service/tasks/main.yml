@@ -166,6 +166,9 @@
   tags:
     - install
     - install:app-requirements
+  register: requirements
+  retries: 20
+  until: requirements is success
 
 - name: install development requirements
   command: make requirements
