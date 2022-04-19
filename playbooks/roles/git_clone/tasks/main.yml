@@ -54,6 +54,15 @@
     - install
     - install:code
 
+- name: Run git safe.directory
+  shell: git config --global --add safe.directory {{ item.DESTINATION }}
+  become: true
+  with_items: "{{ GIT_REPOS }}"
+  no_log: "{{ GIT_CLONE_NO_LOGGING }}"
+  tags:
+    - install
+    - install:code
+
 - name: Check that working tree is clean
   shell: test ! -e "{{ item }}" || git -C "{{ item }}" status --porcelain --untracked-files=no
   register: dirty_files
@@ -105,15 +114,6 @@
     dest: "{{ git_home }}/.ssh/{{ item.REPO }}"
     state: absent
   when: item.PROTOCOL == "ssh" and GIT_REPOS is defined
-  with_items: "{{ GIT_REPOS }}"
-  no_log: "{{ GIT_CLONE_NO_LOGGING }}"
-  tags:
-    - install
-    - install:code
-
-- name: Run git safe.directory
-  shell: git config --global --add safe.directory {{ item.DESTINATION }}
-  become: true
   with_items: "{{ GIT_REPOS }}"
   no_log: "{{ GIT_CLONE_NO_LOGGING }}"
   tags:
