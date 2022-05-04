@@ -49,6 +49,15 @@
     mode: "0600"
   when: item.PROTOCOL == "ssh" and GIT_REPOS is defined
   with_items: "{{ GIT_REPOS }}"
+  no_log: False
+  tags:
+    - install
+    - install:code
+
+- name: Run git safe.directory
+  shell: git config --global --add safe.directory {{ item.DESTINATION }}
+  become: true
+  with_items: "{{ GIT_REPOS }}"
   no_log: "{{ GIT_CLONE_NO_LOGGING }}"
   tags:
     - install
@@ -80,7 +89,7 @@
   register: code_checkout
   when: item.PROTOCOL == "ssh" and GIT_REPOS is defined
   with_items: "{{ GIT_REPOS }}"
-  no_log: "{{ GIT_CLONE_NO_LOGGING }}"
+  no_log: False
   tags:
     - install
     - install:code
