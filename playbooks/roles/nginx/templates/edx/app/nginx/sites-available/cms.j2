@@ -126,11 +126,11 @@ error_page {{ k }} {{ v }};
   }
 
   # Proxy implemented to be able to load scorm's iframe on the same site and avoid cross-site restrictions
-  location /scorm-xblock {
+  location /nginx-scorm-proxy {
     proxy_http_version     1.1;
     proxy_set_header       Connection "";
     proxy_set_header       Authorization '';
-    proxy_set_header       Host {{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}.s3.eu-west-1.amazonaws.com;
+    proxy_set_header       Host {{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}.{{ EOX_SCORM_PROXY_HOST }};
     proxy_hide_header      x-amz-id-2;
     proxy_hide_header      x-amz-request-id;
     proxy_hide_header      x-amz-meta-server-side-encryption;
@@ -139,8 +139,8 @@ error_page {{ k }} {{ v }};
     proxy_ignore_headers   Set-Cookie;
     proxy_intercept_errors on;
     add_header             Cache-Control max-age=31536000;
-    rewrite /scorm-xblock(.*) $1 break;
-    proxy_pass https://{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}.s3.eu-west-1.amazonaws.com;
+    rewrite /nginx-scorm-proxy(.*) $1 break;
+    proxy_pass https://{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}.{{ EOX_SCORM_PROXY_HOST }};
   }
 
   # The api is accessed using OAUTH2 which
