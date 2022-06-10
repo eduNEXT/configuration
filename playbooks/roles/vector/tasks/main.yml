@@ -1,0 +1,80 @@
+---
+#
+# vector
+#
+# Overview:
+#
+# Installs vector
+##
+# Dependencies:
+#
+# Example play:
+#   roles:
+#   - vector
+#
+- name: "Prepare the vector package for apt based in https://vector.dev/docs/setup/installation/package-managers/apt/"
+  shell: |
+    curl -1sLf 'https://repositories.timber.io/public/vector/cfg/setup/bash.deb.sh' |  sudo -E bash
+  args:
+    executable: /bin/bash
+  changed_when: false
+  become: true
+  tags:
+    - vector
+
+- name: Install debian vector pkg
+  apt:
+    name: vector
+    state: present
+  become: true
+  tags:
+    - vector
+
+- name: Send vector toml config template
+  template:
+    src: "vector_clickhouse_config.j2"
+    dest: "/etc/vector/vector.toml"
+    mode: "0655"
+  when: ENABLE_VECTOR_SINK_S3
+  become: true
+  tags:
+    - vector
+
+- name: Send vector toml config template with s3
+  template:
+    src: "vector_clickhouse_s3_config.j2"
+    dest: "/etc/vector/vector.toml"
+    mode: "0755"
+  when: ENABLE_VECTOR_SINK_S3
+  become: true
+  tags:
+    - vector
+
+
+- name: Give read permission for tracking log file
+  file:
+    path: "{{ VECTOR_SOURCE_TRACKING_FILE }}"
+    mode: "0755"
+  become: true
+  tags:
+    - vector
+
+- name: Config vector profiles for systemctl service
+  file:
+    path: /var/lib/vector/  # Data dir default permission for vector user access.
+    mode: "0766"
+    owner: vector
+    group: vector
+  become: true
+  tags:
+    - vector
+
+
+- name: Ensure vector started and enabled
+  service:
+    name: vector
+    state: started
+    enabled: yes
+  become: true
+  tags:
+    - vector
