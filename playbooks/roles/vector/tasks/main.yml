@@ -12,9 +12,22 @@
 #   roles:
 #   - vector
 #
-- name: "Prepare the vector package for apt based in https://vector.dev/docs/setup/installation/package-managers/apt/"
+
+- name: Install prereqs based in https://cloudsmith.io/~timber/repos/vector/setup/#formats-deb
+  apt:
+    pkg:
+    - debian-keyring
+    - debian-archive-keyring
+    - apt-transport-https
+  become: true
+  tags:
+    - vector
+
+- name: "Install gpg key sign # For Debian Stretch, Ubuntu 16.04 and later"
   shell: |
-    curl -1sLf 'https://repositories.timber.io/public/vector/cfg/setup/bash.deb.sh' |  sudo -E bash
+    keyring_location=/usr/share/keyrings/timber-vector-archive-keyring.gpg
+    curl -1sLf 'https://repositories.timber.io/public/vector/gpg.3543DB2D0A2BC4B8.key' |  gpg --dearmor > ${keyring_location}
+    curl -1sLf 'https://repositories.timber.io/public/vector/config.deb.txt?distro=ubuntu&codename=xenial' > /etc/apt/sources.list.d/timber-vector.list
   args:
     executable: /bin/bash
   changed_when: false
@@ -26,6 +39,7 @@
   apt:
     name: vector
     state: present
+    update_cache: true
   become: true
   tags:
     - vector
