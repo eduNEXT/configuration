@@ -63,6 +63,13 @@ http {
         ssl_prefer_server_ciphers on;
         ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
 
+        ##
+        # Scorm helpers
+        ##
+        client_max_body_size 100M;
+        proxy_read_timeout 300;
+        proxy_connect_timeout 300;
+        proxy_send_timeout 300;
 
         ##
         # Gzip Settings
@@ -85,4 +92,3 @@ http {
         include {{ nginx_conf_dir }}/*.conf;
         include {{ nginx_sites_enabled_dir }}/*;
 }
-
