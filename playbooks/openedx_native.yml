@@ -117,4 +117,4 @@
     - role: uptime_report
       when: ENABLE_UPTIME_REPORT
     - role: vector
-      when: ENABLE_VECTOR_WATCHER
+      when: ENABLE_VECTOR_WATCHER | default(false)

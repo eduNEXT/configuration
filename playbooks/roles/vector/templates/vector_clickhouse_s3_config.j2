@@ -61,20 +61,20 @@ inputs = ["tracking"]
 bucket = "{{ VECTOR_AWS_STORAGE_BUCKET_NAME }}"
 auth.access_key_id = "{{ VECTOR_AWS_ACCESS_KEY_ID }}"
 auth.secret_access_key = "{{ VECTOR_AWS_SECRET_ACCESS_KEY }}"
-key_prefix = "vector_logs/date=%F/%H:%M/"
+key_prefix = "vector_logs/date=%F/"
 compression = "none"
 # content_encoding = "gzip"
 encoding.codec = "json"
 region = "{{ VECTOR_S3_REGION }}"
 
 
-# # # Send logs to clickhouse
+# Send logs to clickhouse
 [sinks.clickhouse]
 type = "clickhouse"
 # Required: https://github.com/timberio/vector/issues/5797
 encoding.timestamp_format = "unix"
 inputs = ["tracking"]
 endpoint = "{{ VECTOR_SINK_CLICKHOUSE_ENDPOINT }}"
-database = "openedx"
+database = "{{ VECTOR_SINK_CLICKHOUSE_DATABASE }}"
 table = "_tracking"
 healthcheck = true
