@@ -1,0 +1,94 @@
+---
+#
+# vector
+#
+# Overview:
+#
+# Installs vector
+##
+# Dependencies:
+#
+# Example play:
+#   roles:
+#   - vector
+#
+
+- name: Install prereqs based in https://cloudsmith.io/~timber/repos/vector/setup/#formats-deb
+  apt:
+    pkg:
+    - debian-keyring
+    - debian-archive-keyring
+    - apt-transport-https
+  become: true
+  tags:
+    - vector
+
+- name: "Install gpg key sign # For Debian Stretch, Ubuntu 16.04 and later"
+  shell: |
+    keyring_location=/usr/share/keyrings/timber-vector-archive-keyring.gpg
+    curl -1sLf 'https://repositories.timber.io/public/vector/gpg.3543DB2D0A2BC4B8.key' |  gpg --dearmor > ${keyring_location}
+    curl -1sLf 'https://repositories.timber.io/public/vector/config.deb.txt?distro=ubuntu&codename=xenial' > /etc/apt/sources.list.d/timber-vector.list
+  args:
+    executable: /bin/bash
+  changed_when: false
+  become: true
+  tags:
+    - vector
+
+- name: Install debian vector pkg
+  apt:
+    name: vector
+    state: present
+    update_cache: true
+  become: true
+  tags:
+    - vector
+
+- name: Send vector toml config template
+  template:
+    src: "vector_clickhouse_config.j2"
+    dest: "/etc/vector/vector.toml"
+    mode: "0655"
+  when: ENABLE_VECTOR_SINK_S3
+  become: true
+  tags:
+    - vector
+
+- name: Send vector toml config template with s3
+  template:
+    src: "vector_clickhouse_s3_config.j2"
+    dest: "/etc/vector/vector.toml"
+    mode: "0755"
+  when: ENABLE_VECTOR_SINK_S3
+  become: true
+  tags:
+    - vector
+
+
+- name: Give read permission for tracking log file
+  file:
+    path: "{{ VECTOR_SOURCE_TRACKING_FILE }}"
+    mode: "0755"
+  become: true
+  tags:
+    - vector
+
+- name: Config vector profiles for systemctl service
+  file:
+    path: /var/lib/vector/  # Data dir default permission for vector user access.
+    mode: "0766"
+    owner: vector
+    group: vector
+  become: true
+  tags:
+    - vector
+
+
+- name: Ensure vector started and enabled
+  service:
+    name: vector
+    state: started
+    enabled: yes
+  become: true
+  tags:
+    - vector

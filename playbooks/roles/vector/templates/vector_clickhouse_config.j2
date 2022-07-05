@@ -1,0 +1,69 @@
+data_dir = "/var/lib/vector/"
+
+# Vector's API for introspection
+[api]
+enabled = true
+address = "127.0.0.1:8686"
+
+### Sources
+# source from trackings logs
+[sources.tracking_logs]
+type         = "file"
+include      = ["{{ VECTOR_SOURCE_TRACKING_FILE }}"]    # supports globbing
+ignore_older = 86400                         # 1 day
+
+### Transforms
+
+# Parse tracking logs: extract time
+[transforms.tracking]
+type = "remap"
+inputs = ["tracking_logs"]
+# Time formats: https://docs.rs/chrono/0.4.19/chrono/format/strftime/index.html#specifiers
+source = '''
+
+message = .message
+parsed_json, err_json = parse_json(message)
+if err_json != null {
+  log("Unable to parse JSON from tracking log message: " + err_json, level: "error")
+  abort
+}
+time, err_timestamp = parse_timestamp(parsed_json.time, "%+")
+if err_timestamp != null {
+  log("Unable to parse timestamp from tracking log message: " + err_timestamp, level: "error")
+  abort
+}
+. = {"time": time, "message": message}
+'''
+drop_on_error = true
+drop_on_abort = true
+
+[transforms.tracking_debug]
+type = "remap"
+inputs = ["tracking"]
+# Time formats: https://docs.rs/chrono/0.4.19/chrono/format/strftime/index.html#specifiers
+source = '''
+.message = parse_json!(.message)
+'''
+
+### Sinks
+
+# Log all events to stdout, for debugging
+[sinks.out]
+type = "console"
+inputs = ["tracking_debug"]
+encoding.codec = "json"
+encoding.only_fields = ["time", "message.context.course_id", "message.context.user_id", "message.name"]
+target = "stdout"
+
+
+
+# Send logs to clickhouse
+[sinks.clickhouse]
+type = "clickhouse"
+# Required: https://github.com/timberio/vector/issues/5797
+encoding.timestamp_format = "unix"
+inputs = ["tracking"]
+endpoint = "{{ VECTOR_SINK_CLICKHOUSE_ENDPOINT }}"
+database = "{{ VECTOR_SINK_CLICKHOUSE_DATABASE }}"
+table = "_tracking"
+healthcheck = true
