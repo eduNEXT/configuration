@@ -34,6 +34,18 @@
     - install
     - install:base
 
+- name: Create Certificate Directory
+  file:
+    path: "{{EDXAPP_MYSQL_CA_PATH}}"
+    state: directory
+
+- name: Download Global Bundle Certificate
+  get_url:
+    url: "{{EDXAPP_MYSQL_CERTIFICATE_URL}}"
+    dest: "{{EDXAPP_MYSQL_CA_PATH}}/{{EDXAPP_MYSQL_CA_NAME}}"
+    force: yes
+    owner: "{{ edxapp_user }}"
+
 # Do A Checkout
 - name: checkout edx-platform repo into {{ edxapp_code_dir }}
   git:
