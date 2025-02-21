@@ -40,15 +40,6 @@
     - install
     - install:configuration
 
-- name: Install needed packages
-  apt:
-    name: "{{ nginx_debian_pkgs }}"
-    state: present
-  notify: restart nginx
-  tags:
-    - install
-    - install:system-requirements
-
 - name: Download and add Nginx signing key
   shell: |
     curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg
@@ -61,6 +52,20 @@
     repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx"
     state: present
     filename: "nginx"
+  notify: restart nginx
+  tags:
+    - install
+    - install:system-requirements
+
+- name: Update apt repositories
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: Install needed packages
+  apt:
+    name: "{{ nginx_debian_pkgs }}"
+    state: present
   notify: restart nginx
   tags:
     - install
