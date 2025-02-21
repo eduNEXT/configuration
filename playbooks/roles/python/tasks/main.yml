@@ -6,17 +6,13 @@
   raw: test -e /usr/bin/cloud-init && cloud-init status --wait
   ignore_errors: yes
 
-- name: Debug apt keys before update
-  raw: "apt-key list"
-  register: apt_keys
-  ignore_errors: yes
-
-- debug:
-    msg: "{{ apt_keys.stdout_lines }}"
-
 - name: Remove expired nginx key
   raw: "apt-key del 7BD9BF62"
   ignore_errors: yes
+
+- name: Add new Nginx GPG key
+  raw: "wget -qO - https://nginx.org/keys/nginx_signing.key | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg > /dev/null"
+  ignore_errors: no
 
 - name: Update apt-get
   raw: apt-get update -qq
