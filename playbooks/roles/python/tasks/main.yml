@@ -10,9 +10,12 @@
   raw: "apt-key del 7BD9BF62"
   ignore_errors: yes
 
-- name: Add new Nginx GPG key
-  raw: "wget -qO - https://nginx.org/keys/nginx_signing.key | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg > /dev/null"
-  ignore_errors: no
+- name: Download and add Nginx signing key
+  shell: |
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg
+  args:
+    warn: false
+  become: yes
 
 - name: Update apt-get
   raw: apt-get update -qq
