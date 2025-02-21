@@ -10,6 +10,22 @@
 #  raw: "apt-key del 7BD9BF62"
 #  ignore_errors: yes
 
+- name: Debug installed GPG keys
+  shell: apt-key list
+  register: gpg_keys
+  changed_when: false
+
+- debug:
+    msg: "{{ gpg_keys.stdout_lines }}"
+
+- name: Debug Nginx repository configuration
+  shell: cat /etc/apt/sources.list.d/nginx.list
+  register: nginx_repo
+  changed_when: false
+
+- debug:
+    msg: "{{ nginx_repo.stdout_lines }}"
+
 - name: Update apt-get
   raw: apt-get update -qq
   register: python_update_result
