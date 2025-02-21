@@ -18,6 +18,12 @@
     warn: false
   become: yes
 
+- name: Remove existing Nginx repository file if it exists
+  file:
+    path: /etc/apt/sources.list.d/nginx.list
+    state: absent
+  become: yes
+
 - name: Ensure the Nginx repository is configured correctly
   shell: |
     echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu xenial nginx" | tee /etc/apt/sources.list.d/nginx.list
