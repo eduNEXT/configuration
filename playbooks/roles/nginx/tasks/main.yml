@@ -49,19 +49,18 @@
     - install
     - install:system-requirements
 
-- name: Add apt key
-  apt_key:
-    url: "http://nginx.org/keys/nginx_signing.key"
-    state: present
-  notify: restart nginx
-  tags:
-    - install
-    - install:system-requirements
+- name: Download and add Nginx signing key
+  shell: |
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg
+  args:
+    warn: false
+  become: yes
 
 - name: Add nginx repository
   apt_repository:
-    repo: "{{ NGINX_APT_REPO }}"
+    repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx"
     state: present
+    filename: "nginx"
   notify: restart nginx
   tags:
     - install

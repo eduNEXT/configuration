@@ -6,16 +6,9 @@
   raw: test -e /usr/bin/cloud-init && cloud-init status --wait
   ignore_errors: yes
 
-- name: Remove expired nginx key
-  raw: "apt-key del 7BD9BF62"
-  ignore_errors: yes
-
-- name: Download and add Nginx signing key
-  shell: |
-    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg
-  args:
-    warn: false
-  become: yes
+#- name: Remove expired nginx key
+#  raw: "apt-key del 7BD9BF62"
+#  ignore_errors: yes
 
 - name: Update apt-get
   raw: apt-get update -qq
