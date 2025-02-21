@@ -6,18 +6,14 @@
   raw: test -e /usr/bin/cloud-init && cloud-init status --wait
   ignore_errors: yes
 
-#- name: Remove expired nginx key
-#  raw: "apt-key del 7BD9BF62"
-#  ignore_errors: yes
-
 - name: Remove expired nginx key
   raw: "apt-key del 7BD9BF62"
   ignore_errors: yes
   become: yes
 
-- name: Download and add Nginx signing key
+- name: Download and add Nginx signing key (force overwrite)
   shell: |
-    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg > /dev/null
   args:
     warn: false
   become: yes
