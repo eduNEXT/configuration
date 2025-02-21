@@ -6,6 +6,14 @@
   raw: test -e /usr/bin/cloud-init && cloud-init status --wait
   ignore_errors: yes
 
+- name: Debug apt keys before update
+  raw: "apt-key list"
+  register: apt_keys
+  ignore_errors: yes
+
+- debug:
+    msg: "{{ apt_keys.stdout_lines }}"
+
 - name: Update apt-get
   raw: apt-get update -qq
   register: python_update_result
