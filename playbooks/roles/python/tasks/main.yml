@@ -20,7 +20,7 @@
 
 - name: Ensure the Nginx repository is configured correctly
   shell: |
-    echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx" | tee /etc/apt/sources.list.d/nginx.list
+    echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu xenial nginx" | tee /etc/apt/sources.list.d/nginx.list
   become: yes
 
 - name: Debug installed GPG keys
