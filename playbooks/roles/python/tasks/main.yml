@@ -10,6 +10,23 @@
 #  raw: "apt-key del 7BD9BF62"
 #  ignore_errors: yes
 
+- name: Remove expired nginx key
+  raw: "apt-key del 7BD9BF62"
+  ignore_errors: yes
+  become: yes
+
+- name: Download and add Nginx signing key
+  shell: |
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg
+  args:
+    warn: false
+  become: yes
+
+- name: Ensure the Nginx repository is configured correctly
+  shell: |
+    echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx" | tee /etc/apt/sources.list.d/nginx.list
+  become: yes
+
 - name: Debug installed GPG keys
   shell: apt-key list
   register: gpg_keys
