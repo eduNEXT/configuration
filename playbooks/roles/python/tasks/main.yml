@@ -6,44 +6,33 @@
   raw: test -e /usr/bin/cloud-init && cloud-init status --wait
   ignore_errors: yes
 
-- name: Remove expired nginx key
-  raw: "apt-key del 7BD9BF62"
+#- name: Remove expired nginx key
+#  raw: "apt-key del 7BD9BF62"
+#  ignore_errors: yes
+#  become: yes
+
+- name: Remove conflicting Nginx sources (if exists)
+  raw: rm -f /etc/apt/sources.list.d/nginx.list
   ignore_errors: yes
-  become: yes
 
-- name: Download and add Nginx signing key (force overwrite)
-  shell: |
-    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg > /dev/null
-  args:
-    warn: false
-  become: yes
+- name: Ensure correct Nginx signing key is added
+  raw: |
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | tee /usr/share/keyrings/nginx-archive-keyring.gpg > /dev/null
+  ignore_errors: yes
 
-- name: Remove existing Nginx repository file if it exists
-  file:
-    path: /etc/apt/sources.list.d/nginx.list
-    state: absent
-  become: yes
+- name: Add correct Nginx repository
+  raw: |
+    echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" | tee /etc/apt/sources.list.d/nginx.list
+  ignore_errors: yes
 
-- name: Ensure the Nginx repository is configured correctly
-  shell: |
-    echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu xenial nginx" | tee /etc/apt/sources.list.d/nginx.list
-  become: yes
+- name: Debug APT sources to verify Nginx repo
+  raw: cat /etc/apt/sources.list.d/nginx.list
+  register: nginx_repo_check
+  ignore_errors: yes
 
-- name: Debug installed GPG keys
-  shell: apt-key list
-  register: gpg_keys
-  changed_when: false
-
-- debug:
-    msg: "{{ gpg_keys.stdout_lines }}"
-
-- name: Debug Nginx repository configuration
-  shell: cat /etc/apt/sources.list.d/nginx.list
-  register: nginx_repo
-  changed_when: false
-
-- debug:
-    msg: "{{ nginx_repo.stdout_lines }}"
+- name: Display Nginx repo debug output
+  debug:
+    msg: "{{ nginx_repo_check.stdout_lines }}"
 
 - name: Update apt-get
   raw: apt-get update -qq
