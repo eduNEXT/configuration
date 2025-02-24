@@ -15,10 +15,19 @@
   raw: grep -rl "nginx.org" /etc/apt/sources.list /etc/apt/sources.list.d/ | xargs rm -f
   ignore_errors: yes
 
-- name: Ensure correct Nginx signing key is added
-  raw: |
-    curl -fsSL https://nginx.org/keys/nginx_signing.key | tee /usr/share/keyrings/nginx-archive-keyring.gpg > /dev/null
+- name: Remove any old Nginx GPG keys (if they exist)
+  raw: rm -f /usr/share/keyrings/nginx-archive-keyring.gpg
   ignore_errors: yes
+
+- name: Import correct Nginx GPG signing key
+  raw: |
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg > /dev/null
+  register: gpg_key_result
+  ignore_errors: yes
+
+- name: Debug GPG key import result
+  debug:
+    msg: "{{ gpg_key_result.stdout_lines }}"
 
 - name: Add correct Nginx repository
   raw: |
